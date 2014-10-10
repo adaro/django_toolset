@@ -1,0 +1,114 @@
+.ui-selecting {
+    background: #8bacff;
+}
+
+.ui-selected {
+    background: #8bacff;
+    color: #ffffff;
+}
+
+.ui-selected:hover {
+    background: #8bacff;
+    color: #ffffff;
+}
+
+li {
+    list-style: none;
+}
+
+#contextMenu {
+    color: black;
+    height: 30px;
+    left: 730px;
+    position: absolute;
+    top: 41px;
+    font-family: Helvetica, sans-serif;
+}
+
+table {
+    table-layout: fixed;
+    word-wrap: break-word;
+    width: 1px;
+    border: 1px solid gray;
+}
+
+table td {
+    overflow: hidden;
+    border: .5px solid gray;
+    color: #d3d3d3;
+}
+
+table th {
+    border: 1px solid gray;
+    position: relative;
+    text-align: left;
+    cursor: pointer;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#loading .well {
+    margin: 20px 20px 20px 20px;
+    background-color: white;
+    color: black;
+}
+
+table th .resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    background-color: #CCC;
+    cursor: col-resize;
+}
+table th .resize-marquee {
+    position: absolute;
+    top:0;
+    left: 0;
+    box-shadow: inset 0 0 0 1px gray;
+}
+
+#contextMenu li {
+    background-color: skyblue;
+    font-size: 14px;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    border-top: 1px solid white;
+
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#contextMenu li:hover {
+    color: lightskyblue;
+    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    opacity: .5;
+}
+
+#contextMenu a {
+    text-decoration: none;
+}
+
+#sidebar-resizer {
+    background-color: #666;
+    position: absolute;
+    top: 35px;
+    bottom: 0;
+    left: 200px;
+    width: 6px;
+    cursor: e-resize;
+}
+
+#userdata{
+    margin-top: 10px;
+    color:#666;
+    border-color: lightskyblue;
+}
