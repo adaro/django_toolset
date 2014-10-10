@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+
+
+
+<!DOCTYPE html >
 <!--[if lt IE 7]>
 <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>
@@ -6,32 +9,37 @@
 <!--[if IE 8]>
 <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js"> <!--<![endif]-->
+<html class="no-js" ng-app="dashboard">  <!--<![endif]-->
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Tables</title>
-        <meta name="description" content="Metis: Bootstrap Responsive Admin Theme">
+        <title>dashboard</title>
+        <meta name="description" content="DD dashboard: Bootstrap Responsive Admin Theme">
         <meta name="viewport" content="width=device-width">
-        <link type="text/css" rel="stylesheet" href="assets/css/bootstrap.min.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/css/bootstrap-responsive.min.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/Font-awesome/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="assets/css/style.css">
-        <link type="text/css" rel="stylesheet" href="assets/css/DT_bootstrap.css"/>
-        <link rel="stylesheet" href="assets/css/responsive-tables.css">
-        
-        <link rel="stylesheet" href="assets/css/theme.css">
-        
-        <script type="text/javascript" src="assets/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="/static/assets/css/bootstrap.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/assets/css/bootstrap-responsive.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/assets/Font-awesome/css/font-awesome.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/assets/css/style.css">
+        <link type="text/css" rel="stylesheet" href="/static/assets/css/DT_bootstrap.css"/>
+        <link rel="stylesheet" href="/static/assets/css/responsive-tables.css">
+
+        <link rel="stylesheet" href="/static/assets/css/theme.css">
+
+        <link rel="stylesheet" type="text/css" href="/static/css/select2.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/dashboard.css">
+            <link rel="stylesheet" type="text/css" href="/static/css/ng-grid.css"/>
+
+        <!-- {% load custom_tags %}  load up any custom tags here-->
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
         <!--[if IE 7]>
-        <link type="text/css" rel="stylesheet" href="assets/Font-awesome/css/font-awesome-ie7.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/static/assets/Font-awesome/css/font-awesome-ie7.min.css"/>
         <![endif]-->
     </head>
-    <body>
-        <!-- #wrap -->
+    <body ng-controller="dashboardController" ng-cloak>
+
+    <!-- #wrap -->
         <div id="wrap">
             <!-- #top -->
             <div id="top">
@@ -44,9 +52,11 @@
                                 <span class="icon-bar"></span>
                                 <span class="icon-bar"></span>
                             </a>
-                            <a class="brand" href="index.html">Metis</a>
+                            <a class="brand" ng-click="showDashboard()" href=""><img style="height: 40px; wodth:69px;" class="footer_logo" src="{{ STATIC_URL }}/img/dd3_stackLogo_onBlack.png"></a>
+
 
                             <div class="btn-toolbar topnav">
+                                <div id="loading" class="btn" loading>Loading... <img src="{{ STATIC_URL }}img/spinner.gif"></div>
                                 <div class="btn-group">
                                     <a id="changeSidebarPos" class="btn btn-success" rel="tooltip"
                                     data-original-title="Show / Hide Sidebar" data-placement="bottom">
@@ -82,12 +92,15 @@
                             <div class="nav-collapse collapse">
                                 <!-- .nav -->
                                 <ul class="nav">
-                                    <li>
-                                        <a href="index.html">Dashboard</a></li>
-                                    <li class="active">
-                                        <a href="table.html">Tables</a></li>
-                                    <li>
-                                        <a href="file.html">File Manager</a></li>
+                                    <li ng-class="{active:UIActions.showDashboard}">
+                                         <a ng-click="showDashboard()">Dashboard</a>
+                                    </li>
+                                    <li ng-class="{active:UIActions.showJobs}">
+                                        <a ng-click="showJobs()">Jobs</a>
+                                    </li>
+                                    <li ng-class="{active:UIActions.showHosts}">
+                                        <a ng-click="showHosts()">Hosts</a>
+                                    </li>
                                     <li class="dropdown ">
                                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                             Form Elements <b class="caret"></b>
@@ -121,9 +134,22 @@
                                 </a>
 
                                 <form class="main-search">
-                                    <input class="input-block-level" type="text" placeholder="Live search...">
-                                    <button id="searchBtn" type="submit" class="btn btn-inverse"><i class="icon-search"></i>
-                                    </button>
+                                    <input class="input-block-level" type="text" ng-model="searchText.$" placeholder="Search...">
+                                    <div class="dropdown">
+                                        <button id="searchBtn" type="button" class="btn btn-inverse dropdown-toggle"
+                                                id="dropdownMenu1" data-toggle="dropdown"><i ng-bind="searchText.state" class="icon-search"></i><span class="caret"></span>
+                                        </button>
+                                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" ng-click=filterState("")  href="#">No Filter</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" ng-click=filterState("RUN")  href="#">RUN</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" ng-click=filterState("DONE") href="#">DONE</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" ng-click=filterState("FAIL")  href="#">FAIL</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" ng-click=filterState("HOLD")  href="#">HOLD</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" ng-click=filterState("PAUSE")  href="#">PAUSE</a></li>
+                                            <li role="presentation" class="divider"></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">SHOW FILTER</a></li>
+                                          </ul>
+                                    </div>
                                 </form>
                             </div>
 
@@ -136,7 +162,9 @@
                     <div class="container-fluid">
                         <div class="row-fluid">
                             <div class="span12">
-                                <h3><i class="icon-table"></i> Table</h3>
+
+                                <h3 ng-bind="title"><i class="icon-table"></i></h3>
+
                             </div>
                         </div>
                         <!-- /.row-fluid -->
@@ -147,974 +175,257 @@
             </header>
             <!-- /.head -->
 
+
             <!-- #left -->
-            <div id="left">
+            <div ng-show="UIActions.showJobs" id="left" resizable>
                 <!-- .user-media -->
-                <div class="media user-media hidden-phone">
+                <div id="userdata" class="media user-media hidden-phone well dark" >
                     <a href="" class="user-link">
-                        <img src="assets/img/user.gif" alt="User Picture" class="media-object img-polaroid user-img">
+                        <img src="/static/assets/img/user.gif" alt="User Picture" class="media-object img-polaroid user-img">
                         <span class="label user-label">16</span>
                     </a>
 
                     <div class="media-body hidden-tablet">
-                        <h5 class="media-heading">Archie</h5>
+
+                        <h5 class="media-heading" ng-bind="frameObj.document.user"></h5>
+			            <h5 class="media-heading" ng-bind="frameObj.document.job_id"></h5>
+
                         <ul class="unstyled user-info">
-                            <li><a href="">Administrator</a></li>
-                            <li>Last Access : <br/>
-                                <small><i class="icon-calendar"></i> 16 Mar 16:32</small>
+                            <li><a href="">Artist</a></li>
+                            <li>Submission Time : <br/>
+                                <small ng-bind="frameObj.document.submit_time"><i class="icon-calendar"></i> </small>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <!-- /.user-media -->
                 <!-- #menu -->
-                <ul id="menu" class="unstyled accordion collapse in">
-                    <li class="accordion-group ">
-                        <a data-parent="#menu" data-toggle="collapse" class="accordion-toggle" data-target="#dashboard-nav">
-                            <i class="icon-dashboard icon-large"></i> Dashboard <span
-                                class="label label-inverse pull-right">2</span>
-                        </a>
-                        <ul class="collapse " id="dashboard-nav">
-                            <li><a href="index.html"><i class="icon-angle-right"></i> Default Style</a></li>
-                            <li><a href="alterne.html"><i class="icon-angle-right"></i> Alternative Style</a></li>
-                        </ul>
-                    </li>
-                    <li class="accordion-group ">
-                        <a data-parent="#menu" data-toggle="collapse" class="accordion-toggle" data-target="#component-nav">
-                            <i class="icon-tasks icon-large"></i> Components <span class="label label-inverse pull-right">2</span>
-                        </a>
-                        <ul class="collapse " id="component-nav">
-                            <li><a href="icon.html"><i class="icon-angle-right"></i> Icon & Button</a></li>
-                            <li><a href="progress.html"><i class="icon-angle-right"></i> Progress</a></li>
-                        </ul>
-                    </li>
-                    <li class="accordion-group ">
-                        <a data-parent="#menu" data-toggle="collapse" class="accordion-toggle collapsed" data-target="#form-nav">
-                            <i class="icon-pencil icon-large"></i> Forms <span class="label label-inverse pull-right">4</span>
-                        </a>
-                        <ul class="collapse " id="form-nav">
-                            <li><a href="form-general.html"><i class="icon-angle-right"></i> General</a></li>
-                            <li><a href="form-validation.html"><i class="icon-angle-right"></i> Validation</a></li>
-                            <li><a href="form-wysiwyg.html"><i class="icon-angle-right"></i> WYSIWYG</a></li>
-                            <li><a href="form-wizard.html"><i class="icon-angle-right"></i> Wizard &amp; File Upload</a></li>
-                        </ul>
-                    </li>
-                    <li class="active"><a href="table.html"><i class="icon-table icon-large"></i> Tables</a></li>
-                    <li><a href="file.html"><i class="icon-file icon-large"></i> File Manager</a></li>
-                    <li><a href="typography.html"><i class="icon-font icon-large"></i> Typography</a></li>
-                    <li><a href="maps.html"><i class="icon-map-marker icon-large"></i> Maps</a></li>
-                    <li><a href="chart.html"><i class="icon-bar-chart icon-large"></i> Charts</a></li>
-                    <li>
-                        <a href="calendar.html"><i class="icon-calendar icon-large"></i> Calendar</a></li>
-                    <li class="accordion-group ">
-                        <a data-parent="#menu" data-toggle="collapse" class="accordion-toggle" data-target="#error-nav">
-                            <i class="icon-warning-sign icon-large"></i> Error Pages <span
-                                class="label label-inverse pull-right">7</span>
-                        </a>
-                        <ul class="collapse" id="error-nav">
-                            <li><a href="403.html"><i class="icon-angle-right"></i> 403</a></li>
-                            <li><a href="404.html"><i class="icon-angle-right"></i> 404</a></li>
-                            <li><a href="405.html"><i class="icon-angle-right"></i> 405</a></li>
-                            <li><a href="500.html"><i class="icon-angle-right"></i> 500</a></li>
-                            <li><a href="503.html"><i class="icon-angle-right"></i> 503</a></li>
-                            <li><a href="offline.html"><i class="icon-angle-right"></i> offline</a></li>
-                            <li><a href="countdown.html"><i class="icon-angle-right"></i> Under Construction</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="blank.html"><i class="icon-check-empty icon-large"></i> Blank Page</a></li>
-                    <li>
-                        <a href="login.html"><i class="icon-signin icon-large"></i> Login Page</a></li>
-                </ul>
+                <div id="frames" class="row-fluid pull-left">
+                    <div class="span12">
+                        <div class="box">
+                            <header>
+                                <div class="icons"><i class="icon-list"></i></div>
+                                <h5>User Frames</h5>
+                            </header>
+                            <div id="collapse5" class="body">
+                                [ <a href="" ng-click="predicateFrames=''">unsorted</a> ]
+                                <table class="table table-condensed draggable">
+                                    <thead>
+
+                                        <tr>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'state' && !reverseFrames; predicateFrames = 'state'">State</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'frame_number' && !reverseFrames; predicateFrames = 'frame_number'">Frame</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'host' && !reverseFrames; predicateFrames = 'host'">Host</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'tries' && !reverseFrames; predicateFrames = 'tries'">Try</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'ram' && !reverseFrames; predicateFrames = 'ram'">RAM</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'elapsed' && !reverseFrames; predicateFrames = 'elapsed'">Elapsed</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'start' && !reverseFrames; predicateFrames = 'start'">Start</a><div class="resize-handle"></div></th>
+                                            <th><a href="" ng-click="reverseFrames = predicateFrames == 'cores' && !reverseFrames; predicateFrames = 'cores'">Cores</a><div class="resize-handle"></div></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody ui-selectable2 doc-array="frameObj.document.frames">
+
+                                        <tr ng-repeat="frame in frameObj.document.frames | orderBy:predicateFrames:reverseFrames" id="selectable" class="parent" >
+
+                                            <td ng-bind="frame.state"></td>
+                                            <td ng-bind="frame.frame_number" ></td>
+                                            <td ng-bind="frame.host" ></td>
+                                            <td ng-bind="frame.tries" ></td>
+                                            <td ng-bind="frame.ram" ></td>
+                                            <td ng-bind="frame.elapsed" ></td>
+                                            <td ng-bind="frame.start" ></td>
+                                            <td ng-bind="frame.cores" ></td>
+
+                                            <!--<div ng-hide="contextMenu.visable" id="contextMenu">-->
+                                                <!--&lt;!&ndash; TODO: this should be a ng-repeat. We should allo users to create there own-->
+                                                           <!--right click option menus. dashboard services should ajax load users registered plugins-->
+                                                           <!--would need a way for users to register their own plugins. Could be a database that stores-->
+                                                           <!--a path on disk to a python script. This would get loaded when the users open the application-->
+                                                           <!--so that when a user clicks a right click action it is posted to the server that then runs a rabbit or celery-->
+                                                           <!--process.-->
+                                                <!--&ndash;&gt;-->
+                                                <!--<ul>-->
+                                                    <!--<li><a id="ctxInsert" href="#">Insert</a></li>-->
+                                                    <!--<li><a id="ctxEdit" href="#">Edit</a></li>-->
+                                                    <!--<li><a id="ctxDelete" href="#">Delete</a></li>-->
+                                                <!--</ul>-->
+                                            <!--</div>-->
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- /#menu -->
 
             </div>
+
             <!-- /#left -->
+            <!-- Tools Menu-->
 
             <!-- #content -->
             <div id="content">
                 <!-- .outer -->
-                <div class="container-fluid outer">
-                    <div class="row-fluid">
+                <div id="right-content" class="container-fluid outer">
+                    <div ng-show="UIActions.showJobs" class="row-fluid">
                         <!-- .inner -->
-                        <div class="span12 inner">
+                        <div class="span12 inner" id="jobList">
                             <!--Begin Datatables-->
-                            <div class="row-fluid">
+                            <div id="jobs" class="row-fluid">
                                 <div class="span12">
                                     <div class="box">
                                         <header>
-                                            <div class="icons"><i class="icon-move"></i></div>
-                                            <h5>Dynamic Table</h5>
+                                            <div class="icons"><i class="icon-list"></i></div>
+                                            <h5>User Jobs</h5>
                                         </header>
-                                        <div id="collapse4" class="body">
-                                            <table id="dataTable" class="table table-bordered table-condensed table-hover table-striped">
+                                        <div id="collapse6" class="body">
+                                            <table class="table table-condensed draggable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Rendering engine</th>
-                                                        <th>Browser</th>
-                                                        <th>Platform(s)</th>
-                                                        <th>Engine version</th>
-                                                        <th>CSS grade</th>
+							                            <th><a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'state'">State</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'job_id'">Job ID</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'software_tags' && !reverse; predicate = 'software_tags'">Software Tags</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'shot' && !reverse; predicate = 'shot'">Shot</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'show' && !reverse; predicate = 'show'">Show</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'comments' && !reverse; predicate = 'comments'">Comments</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'user' && !reverse; predicate = 'user'">User</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'cpus_busy' && !reverse; predicate = 'cpus_busy'">Cpus Busy</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'done_frames' && !reverse; predicate = 'done_frames'">Done</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'fail_frames' && !reverse; predicate = 'fail_frames'">Fail</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'farm' && !reverse; predicate = 'farm'">Farm</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'location' && !reverse; predicate = 'location'">Location</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'os_tags' && !reverse; predicate = 'os_tags'">OS</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'priority' && !reverse; predicate = 'priority'">Priority</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'queue_frames' && !reverse; predicate = 'queue_frames'">Queue</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'ram_use' && !reverse; predicate = 'ram_use'">Ram Use</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'run_frames' && !reverse; predicate = 'run_frames'">Run</a><div class="resize-handle"></div></th>
+                                                        <th><a href="" ng-click="reverse = predicate == 'submit_time' && !reverse; predicate = 'submit_time'">Submit Time</a><div class="resize-handle"></div></th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Trident</td>
-                                                        <td>
-                                                            Internet
-                                                            Explorer
-                                                            4.0
-                                                        </td>
-                                                        <td>Win 95+</td>
-                                                        <td>4</td>
-                                                        <td>X</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Trident</td>
-                                                        <td>Internet
-                                                            Explorer 5.0
-                                                        </td>
-                                                        <td>Win 95+</td>
-                                                        <td>5</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Trident</td>
-                                                        <td>Internet
-                                                            Explorer 5.5
-                                                        </td>
-                                                        <td>Win 95+</td>
-                                                        <td>5.5</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Trident</td>
-                                                        <td>Internet
-                                                            Explorer 6
-                                                        </td>
-                                                        <td>Win 98+</td>
-                                                        <td>6</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Trident</td>
-                                                        <td>Internet Explorer 7</td>
-                                                        <td>Win XP SP2+</td>
-                                                        <td>7</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Trident</td>
-                                                        <td>AOL browser (AOL desktop)</td>
-                                                        <td>Win XP</td>
-                                                        <td>6</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Firefox 1.0</td>
-                                                        <td>Win 98+ / OSX.2+</td>
-                                                        <td>1.7</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Firefox 1.5</td>
-                                                        <td>Win 98+ / OSX.2+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Firefox 2.0</td>
-                                                        <td>Win 98+ / OSX.2+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Firefox 3.0</td>
-                                                        <td>Win 2k+ / OSX.3+</td>
-                                                        <td>1.9</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Camino 1.0</td>
-                                                        <td>OSX.2+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Camino 1.5</td>
-                                                        <td>OSX.3+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Netscape 7.2</td>
-                                                        <td>Win 95+ / Mac OS 8.6-9.2</td>
-                                                        <td>1.7</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Netscape Browser 8</td>
-                                                        <td>Win 98SE+</td>
-                                                        <td>1.7</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Netscape Navigator 9</td>
-                                                        <td>Win 98+ / OSX.2+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.0</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.1</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1.1</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.2</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1.2</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.3</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1.3</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.4</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1.4</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.5</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1.5</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.6</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>1.6</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.7</td>
-                                                        <td>Win 98+ / OSX.1+</td>
-                                                        <td>1.7</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Mozilla 1.8</td>
-                                                        <td>Win 98+ / OSX.1+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Seamonkey 1.1</td>
-                                                        <td>Win 98+ / OSX.2+</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Gecko</td>
-                                                        <td>Epiphany 2.20</td>
-                                                        <td>Gnome</td>
-                                                        <td>1.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>Safari 1.2</td>
-                                                        <td>OSX.3</td>
-                                                        <td>125.5</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>Safari 1.3</td>
-                                                        <td>OSX.3</td>
-                                                        <td>312.8</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>Safari 2.0</td>
-                                                        <td>OSX.4+</td>
-                                                        <td>419.3</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>Safari 3.0</td>
-                                                        <td>OSX.4+</td>
-                                                        <td>522.1</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>OmniWeb 5.5</td>
-                                                        <td>OSX.4+</td>
-                                                        <td>420</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>iPod Touch / iPhone</td>
-                                                        <td>iPod</td>
-                                                        <td>420.1</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Webkit</td>
-                                                        <td>S60</td>
-                                                        <td>S60</td>
-                                                        <td>413</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 7.0</td>
-                                                        <td>Win 95+ / OSX.1+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 7.5</td>
-                                                        <td>Win 95+ / OSX.2+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 8.0</td>
-                                                        <td>Win 95+ / OSX.2+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 8.5</td>
-                                                        <td>Win 95+ / OSX.2+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 9.0</td>
-                                                        <td>Win 95+ / OSX.3+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 9.2</td>
-                                                        <td>Win 88+ / OSX.3+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera 9.5</td>
-                                                        <td>Win 88+ / OSX.3+</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Opera for Wii</td>
-                                                        <td>Wii</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Nokia N800</td>
-                                                        <td>N800</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Presto</td>
-                                                        <td>Nintendo DS browser</td>
-                                                        <td>Nintendo DS</td>
-                                                        <td>8.5</td>
-                                                        <td>C/A<sup>1</sup></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>KHTML</td>
-                                                        <td>Konqureror 3.1</td>
-                                                        <td>KDE 3.1</td>
-                                                        <td>3.1</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>KHTML</td>
-                                                        <td>Konqureror 3.3</td>
-                                                        <td>KDE 3.3</td>
-                                                        <td>3.3</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>KHTML</td>
-                                                        <td>Konqureror 3.5</td>
-                                                        <td>KDE 3.5</td>
-                                                        <td>3.5</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Tasman</td>
-                                                        <td>Internet Explorer 4.5</td>
-                                                        <td>Mac OS 8-9</td>
-                                                        <td>-</td>
-                                                        <td>X</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Tasman</td>
-                                                        <td>Internet Explorer 5.1</td>
-                                                        <td>Mac OS 7.6-9</td>
-                                                        <td>1</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Tasman</td>
-                                                        <td>Internet Explorer 5.2</td>
-                                                        <td>Mac OS 8-X</td>
-                                                        <td>1</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>NetFront 3.1</td>
-                                                        <td>Embedded devices</td>
-                                                        <td>-</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>NetFront 3.4</td>
-                                                        <td>Embedded devices</td>
-                                                        <td>-</td>
-                                                        <td>A</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>Dillo 0.8</td>
-                                                        <td>Embedded devices</td>
-                                                        <td>-</td>
-                                                        <td>X</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>Links</td>
-                                                        <td>Text only</td>
-                                                        <td>-</td>
-                                                        <td>X</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>Lynx</td>
-                                                        <td>Text only</td>
-                                                        <td>-</td>
-                                                        <td>X</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>IE Mobile</td>
-                                                        <td>Windows Mobile 6</td>
-                                                        <td>-</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Misc</td>
-                                                        <td>PSP browser</td>
-                                                        <td>PSP</td>
-                                                        <td>-</td>
-                                                        <td>C</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Other browsers</td>
-                                                        <td>All others</td>
-                                                        <td>-</td>
-                                                        <td>-</td>
-                                                        <td>U</td>
+
+
+                                                <tbody ui-selectable doc-array="objData.job_data_array">
+
+                                                    <tr ng-repeat="id in objData.job_data_array | filter:searchText | orderBy:predicate:reverse" id="selectable" class="parent" >
+
+					                                    <td ng-bind="id.state"></td>
+                                                        <td ng-bind="id.job_id"></td>
+                                                        <td ng-bind="id.software_tags"></td>
+                                                        <td ng-bind="id.shot"></td>
+                                                        <td ng-bind="id.show"></td>
+                                                        <td ng-bind="id.comments"></td>
+                                                        <td ng-bind="id.user"></td>
+                                                        <td ng-bind="id.cpus_busy"></td>
+                                                        <td ng-bind="id.done_frames"></td>
+                                                        <td ng-bind="id.fail_frames"></td>
+                                                        <td ng-bind="id.farm"></td>
+                                                        <td ng-bind="id.location"></td>
+                                                        <td ng-bind="id.os_tags"></td>
+                                                        <td ng-bind="id.priority"></td>
+                                                        <td ng-bind="id.queue_frames"></td>
+                                                        <td ng-bind="id.ram_use"></td>
+                                                        <td ng-bind="id.run_frames"></td>
+                                                        <td ng-bind="id.submit_time"></td>
+
                                                     </tr>
                                                 </tbody>
                                             </table>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!--End Datatables-->
 
-                            <hr>
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <h5>Default styles</h5>
-                                            <div class="toolbar">
-                                                <a href="#defaultTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div id="defaultTable" class="body collapse in">
-                                            <table class="table responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>First Name</th>
-                                                        <th>Last Name</th>
-                                                        <th>Username</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
 
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <h5>Table Striped</h5>
-                                            <div class="toolbar">
-                                                <a href="#stripedTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                                <a><i class="icon-remove"></i></a>
-                                            </div>
-                                        </header>
-                                        <div id="stripedTable" class="body collapse in">
-                                            <table class="table table-striped responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>First Name</th>
-                                                        <th>Last Name</th>
-                                                        <th>Username</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <h5>Table Bordered</h5>
-                                            <div class="toolbar">
-                                                <a href="#borderedTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div id="borderedTable" class="body collapse in">
-                                            <table class="table table-bordered responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>First Name</th>
-                                                        <th>Last Name</th>
-                                                        <th>Username</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <h5>Table Hovered</h5>
-                                            <div class="toolbar">
-                                                <a href="#hoveredTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div id="hoveredTable" class="body collapse in">
-                                            <table class="table table-hover responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>First Name</th>
-                                                        <th>Last Name</th>
-                                                        <th>Username</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <h5>Table Condensed</h5>
-                                            <div class="toolbar">
-                                                <a href="#condensedTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div id="condensedTable" class="body collapse in">
-                                            <table class="table table-condensed responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>First Name</th>
-                                                        <th>Last Name</th>
-                                                        <th>Username</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <h5>Optional row classes</h5>
-                                            <div class="toolbar">
-                                                <a href="#optionalTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div id="optionalTable" class="body collapse in">
-                                            <table class="table responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Product</th>
-                                                        <th>Payment Taken</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr class="success">
-                                                        <td>1</td>
-                                                        <td>TB - Monthly</td>
-                                                        <td>01/04/2012</td>
-                                                        <td>Approved</td>
-                                                    </tr>
-                                                    <tr class="error">
-                                                        <td>2</td>
-                                                        <td>TB - Monthly</td>
-                                                        <td>02/04/2012</td>
-                                                        <td>Declined</td>
-                                                    </tr>
-                                                    <tr class="warning">
-                                                        <td>3</td>
-                                                        <td>TB - Monthly</td>
-                                                        <td>03/04/2012</td>
-                                                        <td>Pending</td>
-                                                    </tr>
-                                                    <tr class="info">
-                                                        <td>4</td>
-                                                        <td>TB - Monthly</td>
-                                                        <td>04/04/2012</td>
-                                                        <td>Call in to confirm</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <div class="icons"><i class="icon-edit"></i></div>
-                                            <h5>Table With Action</h5>
-                                            <div class="toolbar">
-                                                <a href="#actionTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div id="actionTable" class="body collapse in">
-                                            <table class="table table-bordered responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>First Name</th>
-                                                        <th>Last Name</th>
-                                                        <th>Username</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                        <td>
-                                                            <button class="btn edit"><i class="icon-edit"></i></button>
-                                                            <button class="btn btn-danger remove" data-toggle="confirmation"><i class="icon-remove"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                        <td>
-                                                            <button class="btn edit"><i class="icon-edit"></i></button>
-                                                            <button class="btn btn-danger remove" data-toggle="confirmation"><i class="icon-remove"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                        <td>
-                                                            <button class="btn edit"><i class="icon-edit"></i></button>
-                                                            <button class="btn btn-danger remove" data-toggle="confirmation"><i class="icon-remove"></i></button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
-
-                            <!-- .row-fluid -->
-                            <div class="row-fluid">
-                                <!-- .span12 -->
-                                <div class="span12">
-                                    <div class="box">
-                                        <header>
-                                            <div class="icons"><i class="icon-sort"></i></div>
-                                            <h5>Sortable Table</h5>
-                                            <div class="toolbar">
-                                                <a href="#sortableTable" data-toggle="collapse" class="accordion-toggle minimize-box">
-                                                    <i class="icon-chevron-up"></i>
-                                                </a>
-                                            </div>
-                                        </header>
-                                        <div class="body collapse in" id="sortableTable">
-                                            <table class="table table-bordered sortableTable responsive">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#
-                                                            <i class="icon-sort"></i><i class="icon-sort-down"></i> <i class="icon-sort-up"></i>
-                                                        </th>
-                                                        <th>First Name
-                                                            <i class="icon-sort"></i><i class="icon-sort-down"></i> <i class="icon-sort-up"></i>
-                                                        </th>
-                                                        <th>Last Name
-                                                            <i class="icon-sort"></i><i class="icon-sort-down"></i> <i class="icon-sort-up"></i>
-                                                        </th>
-                                                        <th>Username
-                                                            <i class="icon-sort"></i><i class="icon-sort-down"></i> <i class="icon-sort-up"></i>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Mark</td>
-                                                        <td>Otto</td>
-                                                        <td>@mdo</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Jacob</td>
-                                                        <td>Thornton</td>
-                                                        <td>@fat</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>Larry</td>
-                                                        <td>the Bird</td>
-                                                        <td>@twitter</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.span12 -->
-                            </div>
-                            <!-- /.row-fluid -->
                         </div>
                         <!-- /.inner -->
                     </div>
                     <!-- /.row-fluid -->
+
+                    <div ng-show="UIActions.showHosts" class="row-fluid">
+
+                        <!-- .inner -->
+                        <div class="span12 inner" id="hosts">
+                            <!--Begin Datatables-->
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <div class="box">
+                                        <header>
+                                            <div class="icons"><i class="icon-list"></i></div>
+                                            <h5>Hosts</h5>
+                                        </header>
+                                        <div id="collapse4" class="body">
+                                            <table class="table table-condensed draggable">
+                                                <thead>
+
+                                                    <tr>
+                                                        <th> <a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'hosts'" class="id" custom-sort order="'id'" sort="sort">Hosts</a><div class="resize-handle"></div></th>
+                                                        <th> <a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'capacity'" class="description" custom-sort order="'description'" sort="sort">Capacity</a><div class="resize-handle"></div></th>
+                                                        <th> <a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'cpus'" class="field3" custom-sort order="'field3'" sort="sort">CPUs Used</a><div class="resize-handle"></div></th>
+                                                        <th> <a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'cores'" class="field4" custom-sort order="'field4'" sort="sort">Cores</a><div class="resize-handle"></div></th>
+                                                        <th> <a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'ram'" class="field5" custom-sort order="'field5'" sort="sort">Total RAM</a><div class="resize-handle"></div></th>
+                                                    </tr>
+
+                                                </thead>
+
+
+                                                <tbody ui-selectable doc-array="objData.job_data_array">
+
+                                                    <tr ng-right-click="rightClickAction()" class="parent"
+                                                        ng-repeat="host in objData.host_data_array | filter:searchText">
+
+                                                        <td ng-bind="host.name"></td>
+                                                        <td ng-bind="host.capacity"></td>
+                                                        <td ng-bind="host.cpus_used"></td>
+                                                        <td ng-bind="host.cores"></td>
+                                                        <td ng-bind="host.ram"></td>
+
+                                                        <!--<div ng-hide="contextMenu.visable" id="contextMenu">-->
+                                                            <!--&lt;!&ndash; TODO: this should be a ng-repeat. We should allo users to create there own-->
+                                                                       <!--right click option menus. dashboard services should ajax load users registered plugins-->
+                                                                       <!--would need a way for users to register their own plugins. Could be a database that stores-->
+                                                                       <!--a path on disk to a python script. This would get loaded when the users open the application-->
+                                                                       <!--so that when a user clicks a right click action it is posted to the server that then runs a rabbit or celery-->
+                                                                       <!--process.-->
+                                                            <!--&ndash;&gt;-->
+                                                            <!--<ul>-->
+                                                                <!--<li><a id="ctxInsert" href="#">Insert</a></li>-->
+                                                                <!--<li><a id="ctxEdit" href="#">Edit</a></li>-->
+                                                                <!--<li><a id="ctxDelete" href="#">Delete</a></li>-->
+                                                            <!--</ul>-->
+                                                        <!--</div>-->
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--End Datatables-->
+
+
+                        </div>
+                        <!-- /.inner -->
+                    </div>
+
                 </div>
                 <!-- /.outer -->
+
+                 <!--Dashboard-->
+                <div id="dash" ng-show="UIActions.showDashboard" class="row-fluid pull-left">
+                    <div class="well dark">
+                        <!-- {% customs_widgets %} custom  widgets here -->
+
+                    </div>
+                    <!-- /.inner -->
+                </div>
+                <br>
+
             </div>
             <!-- /#content -->
             <!-- #push do not remove -->
@@ -1123,9 +434,10 @@
         </div>
         <!-- /#wrap -->
         <div id="footer">
-            <p>2013 © Metis Admin</p>
+            <p>
+                © 2014 Digital Domain 3.0, Inc.
+            </p>
         </div>
-
         <!-- #editModal -->
         <div id="editModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
              aria-hidden="true">
@@ -1188,28 +500,51 @@
 
 
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/static/assets/js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 
         <!--
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <script>window.jQuery.ui || document.write('<script src="assets/js/vendor/jquery-ui-1.10.0.custom.min.js"><\/script>')</script>
         -->
+        <script src="http://code.jquery.com/jquery-2.0.3.min.js" data-semver="2.0.3" data-require="jquery@*"></script>
+        <script src="/static/assets/js/vendor/bootstrap.min.js"></script>
 
-        <script src="assets/js/vendor/bootstrap.min.js"></script>
-
-        <script type="text/javascript" src="assets/js/lib/jquery.tablesorter.min.js"></script>
-        <script type="text/javascript" src="assets/js/lib/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="assets/js/lib/DT_bootstrap.js"></script>
-        <script src="assets/js/lib/responsive-tables.js"></script>
+        <script type="text/javascript" src="/static/assets/js/lib/jquery.tablesorter.min.js"></script>
+        <script type="text/javascript" src="/static/assets/js/lib/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="/static/assets/js/lib/DT_bootstrap.js"></script>
+        <script src="/static/assets/js/lib/responsive-tables.js"></script>
         <script type="text/javascript">
             $(function() {
                 metisTable();
             });
         </script>
-        <script type="text/javascript" src="assets/js/main.js"></script>
-        
-        
-        <script type="text/javascript" src="assets/js/style-switcher.js"></script>
+        <script type="text/javascript" src="/static/assets/js/main.js"></script>
+        <script type="text/javascript" src="/static/assets/js/style-switcher.js"></script>
+
+        <link data-require="jqueryui@*" data-semver="1.10.0" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+        <script data-require="jqueryui@*" data-semver="1.10.0" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/jquery-ui.js"></script>
+        <script type="text/javascript"  src="{{ STATIC_URL }}js/select2-3.4.5/select2.js"></script>
+        <script data-require="angular.js@*" data-semver="1.2.7" src="http://code.angularjs.org/1.2.7/angular.js"></script>
+        <script src="/static/js/angular-ui-select2/select2.js"></script>
+        <script src="/static/js/angular-ui-grid/angular-ui-ng-grid-fb9acf1/ng-grid-2.0.7.min.js"></script>
+        <script src="/static/js/ng-grid-plugins.js"></script>
+        <script src="http://raw.github.com/mkoryak/floatThead/master/dist/jquery.floatThead.min.js"></script>
+        <script type="text/javascript" src="/static/js/angular-datatables.min.js"></script>
+        <script type="text/javascript" src="/static/js/dragtable.js"></script>
+        <script type="text/javascript" src="/static/js/dashboard_services.js"></script>
+        <script src="/static/js/resizer.js"></script>
+        <script type="text/javascript" src="/static/js/dashboard_controllers.js"></script>
+        <script src="{{ STATIC_URL }}js/require.js" type='text/javascript'></script>
+        <script src="{{ STATIC_URL }}js/requirejs.config.js" type='text/javascript'></script>
+        <script type="text/javascript">
+            require(['jquery','domReady', 'widget-controller'], function($, domReady, widgetCtrl) {
+                domReady(function() {
+                    widgetCtrl.initializeWidgets($("#dash"));
+
+                });
+            });
+        </script>
+
     </body>
 </html>
