@@ -34,32 +34,32 @@ class JSONResponseMixin(object):
     #end convert_context_to_json
 #end JSONResponseMixin
 
-class Raceview(TemplateView, JSONResponseMixin):
+class Dashboard(TemplateView, JSONResponseMixin):
 
     template_name = "raceview_admin/table.html"
 
-    json_mixin = JSONResponseMixin() #TODO: mixin class should not have to create object
+    json_mixin = JSONResponseMixin()
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.GET.get('format') == 'json':
             try:
-                race_data_array = utilities.gather_race_data()
-                host_data_array = utilities.gather_host_data()
+                model_data = utilities.gather_data()
+                user_data = utilities.gather_user_data()
             except Exception, error:
                 tb = traceback.format_exc()
                 print tb
                 print error, 100
 
             finally:
-                context["job_data_array"] = race_data_array
-                context["host_data_array"] = host_data_array
+                context["model_data"] = model_data
+                context["user_data"] = user_data
                 try:
                     self.json_mixin.render_to_json_response(context, **response_kwargs)
                 except Exception, error:
                     print error
             return self.json_mixin.render_to_json_response(context, **response_kwargs)
         else:
-            return super(Raceview, self).render_to_response(context)
+            return super(Dashboard, self).render_to_response(context)
 
 
     def post(self):

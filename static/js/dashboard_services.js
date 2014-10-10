@@ -1,8 +1,8 @@
 'use strict';
-var raceview = angular.module('raceview', [ 'ui.select2', 'ngGrid', 'mc.resizer', 'datatables']);
+var dashboard = angular.module('dashboard', [ 'ui.select2', 'ngGrid', 'mc.resizer', 'datatables']);
 
 //SERVICES
-raceview.factory('raceviewServices', function ($http, $q) {
+dashboard.factory('dashboardServices', function ($http, $q) {
     var contentElement = angular.element("#content");
 
     return {
@@ -40,7 +40,7 @@ raceview.factory('raceviewServices', function ($http, $q) {
 
         searchText: {},
 
-        getRaceData: function () {
+        getData: function () {
             //return the promise directly.
             //$q.all allows us to string together requests.
             return $q.all([
@@ -127,7 +127,7 @@ raceview.factory('raceviewServices', function ($http, $q) {
 
 //DIRECTIVES
 //used for loading gif
-raceview.directive('loading', ['$http', function ($http) {
+dashboard.directive('loading', ['$http', function ($http) {
     return {
         restrict: 'A',
         link: function (scope, elm, attrs) {
@@ -160,7 +160,7 @@ raceview.directive('loading', ['$http', function ($http) {
 
 }]);
 
-raceview.directive(
+dashboard.directive(
     'uiSelect2EditableCellTemplate',
     [
         function() {
@@ -199,7 +199,7 @@ raceview.directive(
     ]
 );
 
-raceview.directive('thead', function() {
+dashboard.directive('thead', function() {
   return {
     restrict: 'A',
     scope: {
@@ -217,7 +217,7 @@ raceview.directive('thead', function() {
   };
 });
 
-raceview.directive('ngBlur', function () {
+dashboard.directive('ngBlur', function () {
   return function (scope, elem, attrs) {
     elem.bind('blur', function () {
       scope.$apply(attrs.ngBlur);
@@ -226,8 +226,8 @@ raceview.directive('ngBlur', function () {
 });
 
 //// Right-click Directive,
-//// Keep this light as it instances for every job on race (every row)
-//raceview.directive('ngRightClick', function($parse) {
+//// Keep this light as it instances for every row
+//dashboard.directive('ngRightClick', function($parse) {
 //    return function(scope, element, attrs) {
 //        var fn = $parse(attrs.ngRightClick);
 //        element.bind('contextmenu', function(event) {
@@ -263,7 +263,7 @@ raceview.directive('ngBlur', function () {
 //});
 
 //used for selectable list
-raceview.directive('uiSelectable', function ($parse) {
+dashboard.directive('uiSelectable', function ($parse) {
     return {
         link: function (scope, element, attrs, ctrl) {
             var prev = -1;
@@ -301,7 +301,7 @@ raceview.directive('uiSelectable', function ($parse) {
 });
 
 //used for selectable list
-raceview.directive('uiSelectable2', function ($parse) {
+dashboard.directive('uiSelectable2', function ($parse) {
     return {
         link: function (scope, element, attrs, ctrl) {
             var prev = -1;
@@ -330,7 +330,7 @@ raceview.directive('uiSelectable2', function ($parse) {
     }
 });
 
-raceview.directive('resizable', function () {
+dashboard.directive('resizable', function () {
     return {
         restrict: 'A',
         scope: {
