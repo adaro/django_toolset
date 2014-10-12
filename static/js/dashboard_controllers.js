@@ -1,21 +1,21 @@
 "use strict";
 
 //CONTROLLERS
-function RaceViewController($scope, raceviewServices, DTOptionsBuilder) {
+function RaceViewController($scope, dashboardServices, DTOptionsBuilder) {
     raceviewServices.initResizer();
 
-    $scope.UIActions = raceviewServices.UIActions;
-    $scope.UITitles = raceviewServices.UITitles;
-    $scope.gridOptions = raceviewServices.gridOptions;
+    $scope.UIActions = dashboardServices.UIActions;
+    $scope.UITitles = dashboardServices.UITitles;
+    $scope.gridOptions = dashboardServices.gridOptions;
     $scope.title = $scope.UITitles.dashboard;
     raceviewServices.resizeMargins("0px");
-    $scope.searchText = raceviewServices.searchText;
+    $scope.searchText = dashboardServices.searchText;
     $scope.UIActions.showDashboard = true;
     $scope.UIActions.showHosts = false;
     $scope.UIActions.showJobs = false;
     $scope.loading = true;
 
-    var jobidPromise = raceviewServices.getRaceData(); //grab from services
+    var jobidPromise = dashboardServices.getRaceData(); //grab from services
     jobidPromise.then(function (data) {
         $scope.raceData = data[0];
 //        $scope.dtOptions = DTOptionsBuilder.fromSource($scope.raceData);
