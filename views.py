@@ -36,7 +36,7 @@ class JSONResponseMixin(object):
 
 class Dashboard(TemplateView, JSONResponseMixin):
 
-    template_name = "raceview_admin/table.html"
+    template_name = "dashboard_admin/table.html"
 
     json_mixin = JSONResponseMixin()
 
