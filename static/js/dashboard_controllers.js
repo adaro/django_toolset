@@ -17,8 +17,7 @@ function DashboardController($scope, dashboardServices, DTOptionsBuilder) {
 
     var jobidPromise = dashboardServices.getRaceData(); //grab from services
     jobidPromise.then(function (data) {
-        $scope.raceData = data[0];
-//        $scope.dtOptions = DTOptionsBuilder.fromSource($scope.raceData);
+        $scope.modelData = data[0];
     });
 
     $scope.loading = false;

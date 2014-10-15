@@ -295,49 +295,17 @@
                                                 <thead>
                                                     <tr>
 							                            <th><a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'state'">State</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'job_id' && !reverse; predicate = 'job_id'">Job ID</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'software_tags' && !reverse; predicate = 'software_tags'">Software Tags</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'shot' && !reverse; predicate = 'shot'">Shot</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'show' && !reverse; predicate = 'show'">Show</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'comments' && !reverse; predicate = 'comments'">Comments</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'user' && !reverse; predicate = 'user'">User</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'cpus_busy' && !reverse; predicate = 'cpus_busy'">Cpus Busy</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'done_frames' && !reverse; predicate = 'done_frames'">Done</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'fail_frames' && !reverse; predicate = 'fail_frames'">Fail</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'farm' && !reverse; predicate = 'farm'">Farm</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'location' && !reverse; predicate = 'location'">Location</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'os_tags' && !reverse; predicate = 'os_tags'">OS</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'priority' && !reverse; predicate = 'priority'">Priority</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'queue_frames' && !reverse; predicate = 'queue_frames'">Queue</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'ram_use' && !reverse; predicate = 'ram_use'">Ram Use</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'run_frames' && !reverse; predicate = 'run_frames'">Run</a><div class="resize-handle"></div></th>
-                                                        <th><a href="" ng-click="reverse = predicate == 'submit_time' && !reverse; predicate = 'submit_time'">Submit Time</a><div class="resize-handle"></div></th>
+                                                        
                                                     </tr>
                                                 </thead>
 
 
-                                                <tbody ui-selectable doc-array="raceData.job_data_array">
+                                                <tbody ui-selectable doc-array="modelData.job_data_array">
 
-                                                    <tr ng-repeat="id in raceData.job_data_array | filter:searchText | orderBy:predicate:reverse" id="selectable" class="parent" >
+                                                    <tr ng-repeat="model in modelData.job_data_array | filter:searchText | orderBy:predicate:reverse" id="selectable" class="parent" >
 
-					                                    <td ng-bind="id.state"></td>
-                                                        <td ng-bind="id.job_id"></td>
-                                                        <td ng-bind="id.software_tags"></td>
-                                                        <td ng-bind="id.shot"></td>
-                                                        <td ng-bind="id.show"></td>
-                                                        <td ng-bind="id.comments"></td>
-                                                        <td ng-bind="id.user"></td>
-                                                        <td ng-bind="id.cpus_busy"></td>
-                                                        <td ng-bind="id.done_frames"></td>
-                                                        <td ng-bind="id.fail_frames"></td>
-                                                        <td ng-bind="id.farm"></td>
-                                                        <td ng-bind="id.location"></td>
-                                                        <td ng-bind="id.os_tags"></td>
-                                                        <td ng-bind="id.priority"></td>
-                                                        <td ng-bind="id.queue_frames"></td>
-                                                        <td ng-bind="id.ram_use"></td>
-                                                        <td ng-bind="id.run_frames"></td>
-                                                        <td ng-bind="id.submit_time"></td>
+					                                    <td ng-bind="model.state"></td>
+														
 
                                                     </tr>
                                                 </tbody>
@@ -382,10 +350,10 @@
                                                 </thead>
 
 
-                                                <tbody ui-selectable doc-array="raceData.job_data_array">
+                                                <tbody ui-selectable doc-array="modelData.job_data_array">
 
                                                     <tr ng-right-click="rightClickAction()" class="parent"
-                                                        ng-repeat="host in raceData.host_data_array | filter:searchText">
+                                                        ng-repeat="host in modelData.host_data_array | filter:searchText">
 
                                                         <td ng-bind="host.name"></td>
                                                         <td ng-bind="host.capacity"></td>
