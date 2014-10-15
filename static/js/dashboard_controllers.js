@@ -1,14 +1,14 @@
 "use strict";
 
 //CONTROLLERS
-function RaceViewController($scope, dashboardServices, DTOptionsBuilder) {
-    raceviewServices.initResizer();
+function DashboardController($scope, dashboardServices, DTOptionsBuilder) {
+    dashboardServices.initResizer();
 
     $scope.UIActions = dashboardServices.UIActions;
     $scope.UITitles = dashboardServices.UITitles;
     $scope.gridOptions = dashboardServices.gridOptions;
     $scope.title = $scope.UITitles.dashboard;
-    raceviewServices.resizeMargins("0px");
+    dashboardServices.resizeMargins("0px");
     $scope.searchText = dashboardServices.searchText;
     $scope.UIActions.showDashboard = true;
     $scope.UIActions.showHosts = false;
@@ -27,7 +27,7 @@ function RaceViewController($scope, dashboardServices, DTOptionsBuilder) {
     };
 
     $scope.showHosts = function () {
-        raceviewServices.resizeMargins("0px");
+        dashboardServices.resizeMargins("0px");
         $scope.UIActions.showJobs = false;
         $scope.UIActions.showHosts = true;
         $scope.UIActions.showDashboard = false;
@@ -35,7 +35,7 @@ function RaceViewController($scope, dashboardServices, DTOptionsBuilder) {
     };
 
     $scope.showJobs = function () {
-//        raceviewServices.resizeMargins("525px");
+//        dashboardServices.resizeMargins("525px");
         $scope.UIActions.showHosts = false;
         $scope.UIActions.showJobs = true;
         $scope.UIActions.showDashboard = false;
@@ -43,7 +43,7 @@ function RaceViewController($scope, dashboardServices, DTOptionsBuilder) {
     };
 
     $scope.showDashboard = function () {
-        raceviewServices.resizeMargins("0px");
+        dashboardServices.resizeMargins("0px");
         $scope.UIActions.showHosts = false;
         $scope.UIActions.showJobs = false;
         $scope.UIActions.showDashboard = true;
