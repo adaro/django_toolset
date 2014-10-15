@@ -1,9 +1,4 @@
-{% load prodserv_tags %}
-{% load widget_extras %}
-{% load pb_tags %}
-{% load dm_tags %}
-{% load rss_tags %}
-{% load facility_tags %}
+{% load custom_tags %}
 
 <!DOCTYPE html >
 <!--[if lt IE 7]>
@@ -433,12 +428,8 @@
                  <!--Dashboard-->
                 <div id="dash" ng-show="UIActions.showDashboard" class="row-fluid pull-left">
                     <div class="well dark">
-                        {% racerunqd_wgt %}
-                        {% racerunrun_wgt %}
-                        {% licsused_ven_wgt %}
-                        {% licsused_van_wgt %}
-                        {% framesqd_wgt %}
-                        {% runalloc_wgt %}
+                        {% custom_wgt %}
+                        
                     </div>
                     <!-- /.inner -->
                 </div>
